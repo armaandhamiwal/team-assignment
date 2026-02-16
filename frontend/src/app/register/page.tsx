@@ -151,7 +151,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Confirm Password (✅ FIXED) */}
+        {/* Confirm Password */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Confirm Password <span className="text-red-500">*</span>

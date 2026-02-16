@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ ADD
+import { useRouter } from "next/navigation"; 
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -13,7 +13,7 @@ function isValidPassword(password: string) {
 }
 
 export default function LoginPage() {
-  const router = useRouter(); // ✅ ADD
+  const router = useRouter(); 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +48,6 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ LOGIN SUCCESS → HOME PAGE
       router.push("/");
 
     } catch {
@@ -82,7 +81,6 @@ export default function LoginPage() {
           Login
         </h1>
 
-        {/* Email */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Email <span className="text-red-500">*</span>
@@ -97,7 +95,6 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Password */}
         <div className="mb-8">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Password <span className="text-red-500">*</span>
@@ -127,7 +124,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}

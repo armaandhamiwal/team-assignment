@@ -1,12 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation"; // ✅ ADD
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+function isValidPassword(password: string) {
+  const minLength = password.length >= 8;
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  return minLength && hasSpecialChar;
+}
+
 export default function LoginPage() {
+  const router = useRouter(); // ✅ ADD
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +24,14 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage("");
+
+    if (!isValidPassword(password)) {
+      setMessage(
+        "Password must be at least 8 characters and contain a special character"
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -32,7 +48,9 @@ export default function LoginPage() {
         return;
       }
 
-      setMessage("Login successful");
+      // ✅ LOGIN SUCCESS → HOME PAGE
+      router.push("/");
+
     } catch {
       setMessage("Invalid email or password. Try again.");
     } finally {
@@ -49,13 +67,22 @@ export default function LoginPage() {
     "[&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form className="w-full max-w-md bg-white rounded-xl shadow-lg p-8"
-            onSubmit={handleSubmit}>
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/auth-bg.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 w-full max-w-md bg-white/95 rounded-xl shadow-lg p-8"
+      >
         <h1 className="text-2xl font-semibold text-center mb-8 text-gray-800">
           Login
         </h1>
 
+        {/* Email */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Email <span className="text-red-500">*</span>
@@ -70,6 +97,7 @@ export default function LoginPage() {
           />
         </div>
 
+        {/* Password */}
         <div className="mb-8">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Password <span className="text-red-500">*</span>
@@ -84,32 +112,37 @@ export default function LoginPage() {
               className={`${inputClass} pr-20`}
               placeholder="Enter your password"
             />
-            <motion.button
+            <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2
                          text-sm font-medium text-blue-600 hover:text-blue-800"
             >
               {showPassword ? "Hide" : "Show"}
-            </motion.button>
+            </button>
           </div>
+
+          <p className="mt-1 text-xs text-blue-500">
+            Must be at least 8 characters and include a special character and first letter should be capital
+          </p>
         </div>
 
-        <motion.button
+        {/* Submit */}
+        <button
           type="submit"
           disabled={loading}
-          className={`w-full h-11 rounded-lg font-medium text-white
-                      ${
-                        loading
-                          ? "bg-blue-400 cursor-not-allowed"
-                          : "bg-blue-600 hover:bg-blue-700 active:scale-95"
-                      }`}
+          className={`w-full h-11 rounded-lg font-medium text-white transition
+            ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 active:scale-95"
+            }`}
         >
           {loading ? "Logging in..." : "Login"}
-        </motion.button>
+        </button>
 
         {message && (
-          <p className="mt-4 text-center text-sm text-gray-700">
+          <p className="mt-4 text-center text-sm text-red-600">
             {message}
           </p>
         )}

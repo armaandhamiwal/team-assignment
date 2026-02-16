@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+function isValidPassword(password: string) {
+  const minLength = password.length >= 8;
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  return minLength && hasSpecialChar;
+}
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -28,6 +33,13 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
     setMessage("");
+
+    if (!isValidPassword(password)) {
+      setError(
+        "Password must be at least 8 characters and contain a special character"
+      );
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -63,13 +75,24 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form className="w-full max-w-md bg-white rounded-xl shadow-lg p-8"
-            onSubmit={handleSubmit}>
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      {/* Background */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/register-bg.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 w-full max-w-md bg-white/95 rounded-xl shadow-lg p-8"
+      >
         <h1 className="text-2xl font-semibold text-center mb-8 text-gray-800">
           Create Account
         </h1>
 
+        {/* Name */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Name <span className="text-red-500">*</span>
@@ -83,6 +106,7 @@ export default function RegisterPage() {
           />
         </div>
 
+        {/* Email */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Email <span className="text-red-500">*</span>
@@ -97,6 +121,7 @@ export default function RegisterPage() {
           />
         </div>
 
+        {/* Password */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Password <span className="text-red-500">*</span>
@@ -111,29 +136,45 @@ export default function RegisterPage() {
               className={`${inputClass} pr-20`}
               placeholder="Create a password"
             />
-            <motion.button
+            <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2
                          text-sm font-medium text-blue-600 hover:text-blue-800"
             >
               {showPassword ? "Hide" : "Show"}
-            </motion.button>
+            </button>
           </div>
+
+          <p className="mt-1 text-xs text-gray-500">
+            Must be at least 8 characters and include a special character
+          </p>
         </div>
 
+        {/* Confirm Password (✅ FIXED) */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700">
             Confirm Password <span className="text-red-500">*</span>
           </label>
-          <input
-            type="password"
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className={inputClass}
-            placeholder="Re-enter password"
-          />
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`${inputClass} pr-20`}
+              placeholder="Re-enter password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2
+                         text-sm font-medium text-blue-600 hover:text-blue-800"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -142,18 +183,18 @@ export default function RegisterPage() {
           </p>
         )}
 
-        <motion.button
+        <button
           type="submit"
           disabled={loading}
-          className={`w-full h-11 rounded-lg font-medium text-white
-                      ${
-                        loading
-                          ? "bg-blue-400 cursor-not-allowed"
-                          : "bg-blue-600 hover:bg-blue-700 active:scale-95"
-                      }`}
+          className={`w-full h-11 rounded-lg font-medium text-white transition
+            ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 active:scale-95"
+            }`}
         >
           {loading ? "Registering..." : "Register"}
-        </motion.button>
+        </button>
 
         {message && (
           <p className="mt-4 text-center text-sm text-green-600">
